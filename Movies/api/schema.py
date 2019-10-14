@@ -38,4 +38,18 @@ class Query(graphene.ObjectType):
 
     def resolve_all_directors(self, info, **kwargs):
         return Director.objects.all()
+
+class MovieCreateMutation(graphene.Mutation):
+    class Arguments:
+        title = graphene.String(required=True)
+        year = graphene.Int(required=True)
     
+    movie = graphene.Field(MovieType)
+    
+    def mutate(self, info, title, year):
+        movie = Movie.objects.create(title=title, year=year)
+        return MovieCreateMutation(movie=movie)
+
+
+class Mutation:
+    create_movie = MovieCreateMutation.Field()
