@@ -11,7 +11,7 @@ class Movie(models.Model):
     title = models.CharField(max_length=32)
     year = models.IntegerField(default=2000)
     director = models.ForeignKey(Director, 
-                                 on_delete=models.CASCADE,
+                                 on_delete=models.PROTECT,
                                  blank=True,
                                  null=True)
     def __str__(self):
