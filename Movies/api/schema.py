@@ -5,6 +5,7 @@ from graphql_jwt.decorators import login_required
 from graphene_django.types import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from .models import Director, Movie
+from graphql_relay import from_global_id
 
 class MovieType(DjangoObjectType):
     class Meta:
@@ -39,6 +40,9 @@ class Query(graphene.ObjectType):
     
     all_directors = graphene.List(DirectorType)
     
+    def resolve_all_directors(self, info, **kwargs):
+        return Director.objects.all()
+    
     # @login_required
     # def resolve_all_movies(self, info, **kwargs):
     #     return Movie.objects.all()
@@ -54,9 +58,6 @@ class Query(graphene.ObjectType):
     #         return Movie.objects.get(title=title)
     # 
     #     return None
-
-    def resolve_all_directors(self, info, **kwargs):
-        return Director.objects.all()
 
 class MovieCreateMutation(graphene.Mutation):
     class Arguments:
@@ -87,6 +88,21 @@ class MovieUpdateMutation(graphene.Mutation):
 
         return MovieUpdateMutation(movie=movie)
 
+class MovieUpdateMutationRelay(relay.ClientIDMutation):
+    class Input:
+        title = graphene.String()
+        id = graphene.ID(required=True)
+
+    movie = graphene.Field(MovieType)
+
+    @classmethod
+    def mutate_and_get_payload(cls, root, info, id, title):
+        movie = Movie.objects.get(pk=from_global_id(id)[1])
+        if title is not None:
+            movie.title = title
+        movie.save()
+        return MovieUpdateMutationRelay(movie=movie)
+    
 class MovieDeleteMutation(graphene.Mutation):
     class Arguments:
         id = graphene.ID(required=True)
@@ -106,4 +122,5 @@ class Mutation:
     
     create_movie = MovieCreateMutation.Field()
     update_movie = MovieUpdateMutation.Field()
+    update_movie_relay = MovieUpdateMutationRelay.Field()
     delete_movie = MovieDeleteMutation.Field()
