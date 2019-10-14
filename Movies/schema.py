@@ -1,6 +1,7 @@
 import graphene
+import Movies.api.schema
 
-class Query(graphene.ObjectType):
+class Query(Movies.api.schema.Query, graphene.ObjectType):
     pass
 
 schema = graphene.Schema(query=Query)
