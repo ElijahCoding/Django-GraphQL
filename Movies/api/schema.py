@@ -1,4 +1,5 @@
 import graphene
+import graphql_jwt
 from graphene_django.types import DjangoObjectType
 from .models import Director, Movie
 
@@ -67,7 +68,24 @@ class MovieUpdateMutation(graphene.Mutation):
         movie.save()
 
         return MovieUpdateMutation(movie=movie)
+
+class MovieDeleteMutation(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID(required=True)
+
+    movie = graphene.Field(MovieType)
+
+    def mutate(self, info, id):
+        movie = Movie.objects.get(pk=id)
+        movie.delete()
+
+        return MovieDeleteMutation(movie=None)
         
 class Mutation:
+    token_auth = graphql_jwt.ObtainJSONWebToken.Field()
+    verify_token = graphql_jwt.Verify.Field()
+    refresh_token = graphql_jwt.Refresh.Field()
+    
     create_movie = MovieCreateMutation.Field()
     update_movie = MovieUpdateMutation.Field()
+    delete_movie = MovieDeleteMutation.Field()
