@@ -6,6 +6,11 @@ class MovieType(DjangoObjectType):
     class Meta:
         model = Movie
 
+    movie_age = graphene.String()
+
+    def resolve_movie_age(self, info):
+        return "Old movie" if self.year < 200 else "New movie"
+
 class DirectorType(DjangoObjectType):
     class Meta:
         model = Director
