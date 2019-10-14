@@ -19,6 +19,8 @@ class Query(graphene.ObjectType):
     all_movies = graphene.List(MovieType)
     movie = graphene.Field(MovieType, id=graphene.Int(), title=graphene.String())
 
+    all_directors = graphene.List(DirectorType)
+
     def resolve_all_movies(self, info, **kwargs):
         return Movie.objects.all()
 
@@ -34,3 +36,6 @@ class Query(graphene.ObjectType):
 
         return None
 
+    def resolve_all_directors(self, info, **kwargs):
+        return Director.objects.all()
+    
