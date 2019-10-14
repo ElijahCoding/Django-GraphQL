@@ -1,5 +1,6 @@
 import graphene
 import graphql_jwt
+from graphql_jwt.decorators import login_required
 from graphene_django.types import DjangoObjectType
 from .models import Director, Movie
 
@@ -21,7 +22,8 @@ class Query(graphene.ObjectType):
     movie = graphene.Field(MovieType, id=graphene.Int(), title=graphene.String())
 
     all_directors = graphene.List(DirectorType)
-
+    
+    @login_required
     def resolve_all_movies(self, info, **kwargs):
         return Movie.objects.all()
 
