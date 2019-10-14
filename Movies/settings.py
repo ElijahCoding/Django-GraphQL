@@ -123,5 +123,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 GRAPHENE = {
-    'SCHEMA': 'django_root.schema.schema'
+    'SCHEMA': 'Movies.schema.schema'
 }
